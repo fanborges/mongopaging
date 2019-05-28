@@ -111,10 +111,7 @@ func (q *pagingQuery) Decode(ctx context.Context) (result []bson.Raw, cursor str
 		return
 	}
 
-	data, err := q.db.RunCommand(ctx, cmd)
-	if err != nil {
-		return
-	}
+	data, _ := q.db.RunCommandCursor(ctx, cmd)
 
 	var res struct {
 		Cursor struct {
@@ -124,8 +121,9 @@ func (q *pagingQuery) Decode(ctx context.Context) (result []bson.Raw, cursor str
 			FirstBatch []bson.Raw  `bson:"firstBatch"`
 		} `bson:"cursor"`
 	}
+	data.Decode(&res)
 
-	err = bson.Unmarshal(data, &res)
+	// err = bson.Unmarshal(data, &res)
 	if err != nil {
 		return
 	}
